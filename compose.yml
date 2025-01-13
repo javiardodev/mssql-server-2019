@@ -8,9 +8,10 @@ services:
     ports:
       - "1434:1433"
     restart: always
+    command: /bin/bash ./entrypoint.sh
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S mssql-server -U sa -P ${MSSQL_SA_PASSWORD} -C -Q 'SELECT 1' || exit 1"]
-      interval: 30s
+      interval: 10s
       retries: 5
       start_period: 10s
       timeout: 3s
@@ -19,6 +20,9 @@ services:
         priority: 0
     volumes:
       - mssql-data:/var/opt/mssql/
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./configure-db.sh:/configure-db.sh
+      - ./db/setup.sql:/db/setup-db.sql
 networks:
     network-db:
       name: network-db
